@@ -117,7 +117,31 @@
       .machine-adder button { width:100%; }
     }
 
-  </style>
+  
+/* Ajustes para comentarios extensos y exportacion sin recortes */
+.observations .obs-note {display:block; width:100%; min-height:64px; line-height:1.4; resize:vertical; white-space:pre-wrap; overflow-wrap:anywhere;}
+.observations td:nth-child(2) {width:66%;}
+.print-value {display:none;}
+@media print {
+  body {zoom:1 !important; font-size:10px !important;}
+  .app,.sheet,.content {width:100% !important; max-width:none !important;}
+  .panel {break-inside:auto !important; page-break-inside:auto !important;}
+  .observations, .qrr-table {display:table !important; width:100% !important; min-width:0 !important; overflow:visible !important; table-layout:fixed !important;}
+  .observations thead {display:table-header-group !important;}
+  .observations tbody {display:table-row-group !important;}
+  .observations tr {break-inside:avoid !important; page-break-inside:avoid !important;}
+  .observations td {height:auto !important; vertical-align:top !important;}
+  .observations th.machine,.observations td:first-child {width:28% !important;}
+  .observations th:nth-child(2),.observations td:nth-child(2) {width:72% !important;}
+  .observations .obs-note {display:none !important;}
+  .observations .print-value {display:block !important; white-space:pre-wrap !important; overflow-wrap:anywhere !important; word-break:break-word !important; line-height:1.4 !important; font-size:10px !important; min-height:12px !important;}
+  .observations td:first-child select {display:none !important;}
+  .observations td:first-child .print-value {display:block !important;}
+  .observations .remove {display:none !important;}
+  .observations td,.observations th {padding:5px 6px !important;}
+  .section-title {break-after:avoid !important;}
+}
+</style>
 </head>
 <body>
 <main class="app">
@@ -171,7 +195,7 @@
           <div class="small">El borrador se conserva automáticamente en este navegador mientras se diligencia.</div>
           <nav class="actions" aria-label="Acciones del informe">
             <button type="button" onclick="openEmail()">Enviar correo electrónico</button>
-            <button type="button" class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button>
+            <button type="button" class="secondary" onclick="printFullReport()">Imprimir / Guardar PDF</button>
             <button type="button" class="outline" onclick="downloadHtml()">Descargar HTML</button>
             <button type="button" class="outline" onclick="saveDraft(true)">Guardar borrador</button>
             <button type="button" class="danger" onclick="clearReport()">Nuevo informe</button>
@@ -187,7 +211,7 @@
   'use strict';
 
   var machines = [
-    '1000A BATTENFELD','1000B KRAUSS MAFFEI','1000C ENGEL','1000D HAITIAN','100A SUMITOMO','1080A HAIMING','1080B HAITIAN','110A TOSHIBA','1200A HAITIAN','160A HAITIAN','165A CINCINATI','NISSEI 180A','190A HAITIAN','200C TOSHIBA','200D TOSHIBA','200E TOSHIBA','200F TOSHIBA','2100A HAITIAN','220A SUMITOMO','250B TOSHIBA','250C TOSHIBA','280A SUMITOMO','280B SUMITOMO','280C HAITIAN','280D HAITIAN','280E HAITIAN','280F SUMITOMO','SUMITOMO 280G','280H SUMITOMO','NISSEI 280I','280J HAITIAN','SUMITOMO 280K','350B SUMITOMO','350C SUMITOMO','350D SUMITOMO','SUMITOMO 350E','SUMITOMO 350F','350G SUMITOMO','350H SUMITOMO','SUMITOMO 350I','SUMITOMO 350J','360A HAITIAN','NISSEI 360B','380A HAITIAN','380B HAITIAN','380C HAITIAN','380D HAITIAN','380E HAITIAN','380F HAITIAN','380G HAITIAN','390A TOSHIBA','4000A UBE','SUMITOMO 450B','470A HAITIAN','470B HAITIAN','470C HAITIAN','480A BATTENFELD','480B BATTENFELD','500C TOSHIBA','500D SUMITOMO','530A HAITIAN','75A SUMITOMO','7A NISSEI','7B NISSEI','800A KRAUSS MAFFEI','840A NISSEI','85B TOSHIBA','85C TOSHIBA','900A HAITIAN','950A TOSHIBA','950B TOSHIBA','CIZALLA NIAGRA','CORTADORA DE TELA','EQUIPO LIBERACION DE TENSION','ETIQUETADORA CPK 01','ETIQUETADORA CPK 02','EXTRUSORA GLOUCESTER','EXTRUSORA PLASTICO BURBUJA','FRESADO PARACHOQUE NACHI A','HOT STAMPING NO. 2','TROQUELADORA HUEN CHEN','MESA DE CORTE EXTRU PLAST BURB','PELETIZADORA','PUESTO DE ENSAMBLE #1','PUESTO DE ENSAMBLE #2','PUESTO DE ENSAMBLE # 3','RFANUC (PLT 2)','ROBOT FANUC','SELLADORA DE BOLSAS','SVIMD VISTA','TAMPOGRAFICA #2 SPC-8285D','TAMPOGRAFICA #3 WINOR','TAMPOGRAFICA #5 V-130 DUO','TAMPOGRAFICA #6 WINOR','TERMOSELLADORA 01','TERMOFORMADORA DOBLE MESA','TROQUELADORA HIDRÁULICA 01','TROQUELADORA MECANICA 06','TROQUELADORA MECANICA 07','TROQUELADORA MECANICA 08','TROQUELADORA MECANICA 09 DIABL','TROQUELADORA NEUMATICA 01'
+    '1000A BATTENFELD','1000B KRAUSS MAFFEI','1000C ENGEL','1000D HAITIAN','100A SUMITOMO','1080A HAIMING','1080B HAITIAN','110A TOSHIBA','1200A HAITIAN','160A HAITIAN','165A CINCINATI','NISSEI 180A','190A HAITIAN','200C TOSHIBA','200D TOSHIBA','200E TOSHIBA','200F TOSHIBA','2100A HAITIAN','220A SUMITOMO','250B TOSHIBA','250C TOSHIBA','280A SUMITOMO','280B SUMITOMO','280C HAITIAN','280D HAITIAN','280E HAITIAN','280F SUMITOMO','SUMITOMO 280G','280H SUMITOMO','NISSEI 280I','280J HAITIAN','SUMITOMO 280K','350B SUMITOMO','350C SUMITOMO','350D SUMITOMO','SUMITOMO 350E','SUMITOMO 350F','350G SUMITOMO','350H SUMITOMO','SUMITOMO 350I','SUMITOMO 350J','360A HAITIAN','NISSEI 360B','380A HAITIAN','380B HAITIAN','380C HAITIAN','380D HAITIAN','380E HAITIAN','380F HAITIAN','380G HAITIAN','390A TOSHIBA','4000A UBE','SUMITOMO 450B','470A HAITIAN','470B HAITIAN','470C HAITIAN','480A BATTENFELD','480B BATTENFELD','500C TOSHIBA','500D SUMITOMO','530A HAITIAN','650B NISSEI','75A SUMITOMO','7A NISSEI','7B NISSEI','800A KRAUSS MAFFEI','840A NISSEI','85B TOSHIBA','85C TOSHIBA','900A HAITIAN','950A TOSHIBA','950B TOSHIBA','CIZALLA NIAGRA','CORTADORA DE TELA','EQUIPO LIBERACION DE TENSION','ETIQUETADORA CPK 01','ETIQUETADORA CPK 02','EXTRUSORA GLOUCESTER','EXTRUSORA PLASTICO BURBUJA','FRESADO PARACHOQUE NACHI A','HOT STAMPING NO. 2','TROQUELADORA HUEN CHEN','MESA DE CORTE EXTRU PLAST BURB','PELETIZADORA','PUESTO DE ENSAMBLE #1','PUESTO DE ENSAMBLE #2','PUESTO DE ENSAMBLE # 3','RFANUC (PLT 2)','ROBOT FANUC','SELLADORA DE BOLSAS','SVIMD VISTA','TAMPOGRAFICA #2 SPC-8285D','TAMPOGRAFICA #3 WINOR','TAMPOGRAFICA #5 V-130 DUO','TAMPOGRAFICA #6 WINOR','TERMOSELLADORA 01','TERMOFORMADORA DOBLE MESA','TROQUELADORA HIDRÁULICA 01','TROQUELADORA MECANICA 06','TROQUELADORA MECANICA 07','TROQUELADORA MECANICA 08','TROQUELADORA MECANICA 09 DIABL','TROQUELADORA NEUMATICA 01'
   ];
 
   var state = { stopped: [] };
@@ -260,7 +284,7 @@
     values = values || {};
     var tr = document.createElement('tr');
     tr.innerHTML = '<td><select class="obs-machine">'+optionHtml()+'</select></td>'+
-      '<td><input class="obs-note" placeholder="Novedad, acción tomada y pendiente" value="'+esc(values.note || '')+'"></td>'+
+      '<td><textarea class="obs-note" rows="2" placeholder="Novedad, acción tomada y pendiente">'+esc(values.note || '')+'</textarea></td>'+
       '<td class="remove"><button type="button" aria-label="Eliminar observación" onclick="removeDynamicRow(this)">×</button></td>';
     byId('observationsBody').appendChild(tr);
     tr.getElementsByClassName('obs-machine')[0].value = values.machine || '';
@@ -401,6 +425,26 @@
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,false); else init();
 })();
+
+/* Crea una representacion imprimible con el texto completo de cada observacion. */
+function prepareFullPrint() {
+  var old=document.querySelectorAll('.print-value');
+  for(var j=old.length-1;j>=0;j--) if(old[j].parentNode) old[j].parentNode.removeChild(old[j]);
+  var rows=document.querySelectorAll('#observationsBody tr');
+  for(var i=0;i<rows.length;i++) {
+    var cells=rows[i].getElementsByTagName('td');
+    if(cells.length<2) continue;
+    var machine=cells[0].querySelector('select');
+    var note=cells[1].querySelector('.obs-note');
+    var a=document.createElement('div'); a.className='print-value';
+    a.textContent=machine && machine.selectedIndex>=0 ? machine.options[machine.selectedIndex].text : '';
+    cells[0].appendChild(a);
+    var b=document.createElement('div'); b.className='print-value'; b.textContent=note ? note.value : '';
+    cells[1].appendChild(b);
+  }
+}
+function printFullReport() { prepareFullPrint(); window.print(); }
+if(window.addEventListener) window.addEventListener('beforeprint',prepareFullPrint);
 </script>
 </body>
 </html>
